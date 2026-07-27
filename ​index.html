@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Udhar Khata - Login</title>
+    
+    <!-- Firebase SDK (यह आपके ऐप को फायरबेस से जोड़ेगा) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f6f9; color: #333; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
@@ -29,11 +35,23 @@
         button.action-btn { width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
         button.action-btn:hover { background: #1557b0; }
 
-        /* Legal Information Footer Section */
-        footer { background: #fff; padding: 25px 20px; margin-top: 40px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #555; text-align: left; line-height: 1.6; }
-        .footer-content { max-width: 600px; margin: 0 auto; }
-        .footer-sec-title { font-weight: bold; font-size: 13px; color: #1a73e8; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 3px; }
-        .copyright-text { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ccc; font-weight: bold; color: #333; }
+        /* Footer Links Section */
+        footer { background: #fff; padding: 20px; margin-top: 40px; border-top: 1px solid #e0e0e0; text-align: center; }
+        .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 15px; }
+        .footer-links a { color: #1a73e8; font-size: 13px; font-weight: bold; text-decoration: none; cursor: pointer; padding: 5px 10px; border-radius: 5px; transition: background 0.3s; }
+        .footer-links a:hover { background: #f4f6f9; }
+        .copyright-text { font-size: 12px; color: #777; border-top: 1px dashed #ccc; padding-top: 15px; font-weight: bold; }
+
+        /* Modal (Pop-up) Styles */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(3px); }
+        .modal-content { background-color: #fff; margin: 10% auto; padding: 20px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: left; font-size: 13px; color: #444; line-height: 1.6; }
+        .modal-content p { margin-bottom: 10px; }
+        .footer-sec-title { font-weight: bold; font-size: 15px; color: #1a73e8; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        
+        /* Back Button Style */
+        .back-btn { background: #f1f3f4; color: #333; border: 1px solid #ccc; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 15px; font-size: 13px; }
+        .back-btn:hover { background: #e0e0e0; }
+
     </style>
 </head>
 <body>
@@ -69,16 +87,36 @@
         </div>
     </div>
 
-    <!-- Complete Terms, Privacy, & Copyright Footer -->
+    <!-- Footer with Clickable Links -->
     <footer>
-        <div class="footer-content">
-            
+        <div class="footer-links">
+            <a onclick="openModal('terms-modal')">📜 Terms & Conditions</a>
+            <a onclick="openModal('privacy-modal')">🔒 Privacy Policy</a>
+            <a onclick="openModal('copyright-modal')">⚖️ Copyright Notice</a>
+        </div>
+        <div class="copyright-text">
+            © 2026 My Udhar Khata. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- Modals (Pop-ups for Policies) -->
+    
+    <!-- Terms Modal -->
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <button class="back-btn" onclick="closeModal('terms-modal')">⬅ बैक (Back)</button>
             <div class="footer-sec-title">📜 Terms & Conditions (नियम और शर्तें)</div>
             <p><strong>1. सेवा का उपयोग (Use of Service):</strong> 'My Udhar Khata' एक डिजिटल लेजर और पर्सनल एक्सपेंस ट्रैकर प्लेटफॉर्म है। यह सेवा उपयोगकर्ताओं को उनके दैनिक वित्तीय और उधारी के लेन-देन को रिकॉर्ड करने की सुविधा प्रदान करती है।</p>
             <p><strong>2. डेटा की सटीकता (Accuracy of Data):</strong> उपयोगकर्ता ऐप में अपने द्वारा दर्ज किए गए सभी आंकड़ों, नामों और राशि की सटीकता के लिए स्वयं जिम्मेदार हैं। ऐप में दर्ज किसी भी गलत प्रविष्टि (Entry) के लिए प्लेटफ़ॉर्म जिम्मेदार नहीं होगा।</p>
             <p><strong>3. सेवाओं में बदलाव (Changes to Service):</strong> हम बिना किसी पूर्व सूचना के ऐप की सुविधाओं में सुधार, बदलाव या अपडेट करने का अधिकार सुरक्षित रखते हैं।</p>
             <p><strong>4. यूजर की जिम्मेदारी (User Responsibility):</strong> उपयोगकर्ता किसी भी गैर-कानूनी गतिविधि या फर्जी उधारी प्रविष्टि के लिए ऐप का उपयोग न करने के लिए सहमत हैं।</p>
+        </div>
+    </div>
 
+    <!-- Privacy Modal -->
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <button class="back-btn" onclick="closeModal('privacy-modal')">⬅ बैक (Back)</button>
             <div class="footer-sec-title">🔒 Privacy Policy (गोपनीयता नीति)</div>
             <p><strong>1. हम कौन सा डेटा एकत्र करते हैं? (Data Collection):</strong><br>
             • <em>कस्टमर मोड:</em> केवल आपके द्वारा दर्ज किया गया नाम और आपके रोज़ाना के खर्चों का ब्योरा।<br>
@@ -86,14 +124,50 @@
             <p><strong>2. डेटा की सुरक्षा (Data Security):</strong> आपकी सुरक्षा हमारी पहली प्राथमिकता है। आपका सारा डेटा <strong>Google Firebase Firestore</strong> के सुरक्षित डेटाबेस सर्वर पर सुरक्षित रखा जाता है।</p>
             <p><strong>3. थर्ड-पार्टी शेयरिंग (Third-Party Sharing):</strong> हम आपका कोई भी पर्सनल डेटा, फोन नंबर या वित्तीय रिकॉर्ड किसी भी तीसरी पार्टी, विज्ञापनदाता या बाहरी एजेंसी के साथ साझा नहीं करते हैं।</p>
             <p><strong>4. डेटा रिसेट और कैरी-फॉरवर्ड नीति (Data Maintenance):</strong> प्लेटफ़ॉर्म की मुफ़्त सेवा बनाए रखने के लिए, पुराने विस्तृत ट्रांजेक्शन रिकॉर्ड्स समय-समय पर ऑटो-क्लीन किए जा सकते हैं, लेकिन आपका अंतिम शेष (Carry-forward Balance) हमेशा सुरक्षित रहेगा।</p>
-
-            <div class="copyright-text">
-                © 2026 My Udhar Khata. All Rights Reserved.
-            </div>
         </div>
-    </footer>
+    </div>
+
+    <!-- Copyright Modal -->
+    <div id="copyright-modal" class="modal">
+        <div class="modal-content">
+            <button class="back-btn" onclick="closeModal('copyright-modal')">⬅ बैक (Back)</button>
+            <div class="footer-sec-title">⚖️ Copyright Notice (कॉपीराइट सूचना)</div>
+            <p><strong>© 2026 My Udhar Khata. All Rights Reserved.</strong><br>
+            'My Udhar Khata' का नाम, लोगो (Logo), डिज़ाइन्स, यूज़र इंटरफ़ेस (UI) और इससे संबंधित सभी कंटेंट <strong>My Udhar Khata</strong> के स्वामित्व में हैं। किसी भी व्यक्ति या संस्था द्वारा बिना लिखित अनुमति के इस ऐप का लोगो, सोर्स कोड, नाम या डिज़ाइन कॉपी या री-प्रोड्यूस करना कानूनन प्रतिबंधित है।</p>
+        </div>
+    </div>
 
     <script>
+        // --- आपकी फायरबेस चाबी (Firebase Configuration) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0LNx8Jg9uQVRt9pZmBI-wFXt7tzAG3tM",
+            authDomain: "myudharkhata-270fb.firebaseapp.com",
+            projectId: "myudharkhata-270fb",
+            storageBucket: "myudharkhata-270fb.firebasestorage.app",
+            messagingSenderId: "691714713828",
+            appId: "1:691714713828:web:f0f91d34f52cfca890a4f1",
+            measurementId: "G-7L1D1SWTJ4"
+        };
+        // फायरबेस चालू करने का कोड
+        firebase.initializeApp(firebaseConfig);
+        // ----------------------------------------------------
+
+        // Modals (Pop-ups) Open and Close Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal if user clicks outside the white box
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = "none";
+            }
+        }
+
         // Website Share Functionality
         function shareApp() {
             if (navigator.share) {
@@ -119,4 +193,3 @@
     </script>
 </body>
 </html>
-
