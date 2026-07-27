@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Udhar Khata - Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #333; min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* Top Navigation Header */
+        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .share-btn { background: #1a73e8; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+        .download-btn { background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-weight: bold; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .download-btn:hover { background: #218838; }
+
+        /* Main Container Area */
+        .container { max-width: 450px; width: 90%; margin: 25px auto; background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center; }
+        
+        /* App Logo */
+        .logo-box img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
+        
+        /* Login Cards Side-by-Side */
+        .login-grid { display: flex; gap: 12px; margin-top: 20px; }
+        .login-card { flex: 1; border: 2px solid #1a73e8; padding: 15px 10px; border-radius: 12px; background: #fafafa; }
+        .login-card h3 { font-size: 14px; color: #1a73e8; margin-bottom: 10px; }
+        
+        input { width: 100%; padding: 10px; margin: 6px 0; border-radius: 6px; border: 1px solid #ccc; font-size: 13px; }
+        button.action-btn { width: 100%; padding: 10px; background: #1a73e8; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 5px; font-size: 13px; }
+        button.action-btn:hover { background: #1557b0; }
+
+        /* Legal Information Footer Section */
+        footer { background: #fff; padding: 25px 20px; margin-top: 40px; border-top: 1px solid #e0e0e0; font-size: 12px; color: #555; text-align: left; line-height: 1.6; }
+        .footer-content { max-width: 600px; margin: 0 auto; }
+        .footer-sec-title { font-weight: bold; font-size: 13px; color: #1a73e8; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 3px; }
+        .copyright-text { text-align: center; margin-top: 20px; padding-top: 10px; border-top: 1px dashed #ccc; font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+
+    <!-- Header Area -->
+    <header>
+        <button class="share-btn" onclick="shareApp()">🔗 Share App</button>
+        <a href="#" class="download-btn">📲 APK Download APP</a>
+    </header>
+
+    <!-- Center Main Content -->
+    <div class="container">
+        <!-- Logo Image -->
+        <div class="logo-box">
+            <img src="https://i.ibb.co/MkM0Fj63/20260727-123906.jpg" alt="My Udhar Khata Logo">
+        </div>
+
+        <!-- Login Grid -->
+        <div class="login-grid">
+            <!-- Left: Dukan Login -->
+            <div class="login-card">
+                <h3>दुकान लॉगिन</h3>
+                <input type="tel" id="merchant-phone" placeholder="मोबाईल नंबर">
+                <button class="action-btn">OTP भेजें</button>
+            </div>
+
+            <!-- Right: Customer Login -->
+            <div class="login-card">
+                <h3>Customer Login</h3>
+                <input type="text" id="cust-name-input" placeholder="नाम दर्ज करें">
+                <button class="action-btn" onclick="goToCustomerPage()">प्रवेश करें ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Terms, Privacy, & Copyright Footer -->
+    <footer>
+        <div class="footer-content">
+            
+            <div class="footer-sec-title">📜 Terms & Conditions (नियम और शर्तें)</div>
+            <p><strong>1. सेवा का उपयोग (Use of Service):</strong> 'My Udhar Khata' एक डिजिटल लेजर और पर्सनल एक्सपेंस ट्रैकर प्लेटफॉर्म है। यह सेवा उपयोगकर्ताओं को उनके दैनिक वित्तीय और उधारी के लेन-देन को रिकॉर्ड करने की सुविधा प्रदान करती है।</p>
+            <p><strong>2. डेटा की सटीकता (Accuracy of Data):</strong> उपयोगकर्ता ऐप में अपने द्वारा दर्ज किए गए सभी आंकड़ों, नामों और राशि की सटीकता के लिए स्वयं जिम्मेदार हैं। ऐप में दर्ज किसी भी गलत प्रविष्टि (Entry) के लिए प्लेटफ़ॉर्म जिम्मेदार नहीं होगा।</p>
+            <p><strong>3. सेवाओं में बदलाव (Changes to Service):</strong> हम बिना किसी पूर्व सूचना के ऐप की सुविधाओं में सुधार, बदलाव या अपडेट करने का अधिकार सुरक्षित रखते हैं।</p>
+            <p><strong>4. यूजर की जिम्मेदारी (User Responsibility):</strong> उपयोगकर्ता किसी भी गैर-कानूनी गतिविधि या फर्जी उधारी प्रविष्टि के लिए ऐप का उपयोग न करने के लिए सहमत हैं।</p>
+
+            <div class="footer-sec-title">🔒 Privacy Policy (गोपनीयता नीति)</div>
+            <p><strong>1. हम कौन सा डेटा एकत्र करते हैं? (Data Collection):</strong><br>
+            • <em>कस्टमर मोड:</em> केवल आपके द्वारा दर्ज किया गया नाम और आपके रोज़ाना के खर्चों का ब्योरा।<br>
+            • <em>दुकानदार मोड:</em> आपका मोबाइल नंबर (केवल लॉगिन OTP सत्यापन के लिए) और उधारी का हिसाब।</p>
+            <p><strong>2. डेटा की सुरक्षा (Data Security):</strong> आपकी सुरक्षा हमारी पहली प्राथमिकता है। आपका सारा डेटा <strong>Google Firebase Firestore</strong> के सुरक्षित डेटाबेस सर्वर पर सुरक्षित रखा जाता है।</p>
+            <p><strong>3. थर्ड-पार्टी शेयरिंग (Third-Party Sharing):</strong> हम आपका कोई भी पर्सनल डेटा, फोन नंबर या वित्तीय रिकॉर्ड किसी भी तीसरी पार्टी, विज्ञापनदाता या बाहरी एजेंसी के साथ साझा नहीं करते हैं।</p>
+            <p><strong>4. डेटा रिसेट और कैरी-फॉरवर्ड नीति (Data Maintenance):</strong> प्लेटफ़ॉर्म की मुफ़्त सेवा बनाए रखने के लिए, पुराने विस्तृत ट्रांजेक्शन रिकॉर्ड्स समय-समय पर ऑटो-क्लीन किए जा सकते हैं, लेकिन आपका अंतिम शेष (Carry-forward Balance) हमेशा सुरक्षित रहेगा।</p>
+
+            <div class="copyright-text">
+                © 2026 My Udhar Khata. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Website Share Functionality
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Udhar Khata',
+                    text: 'डिजिटल खाता और डेली एक्सपेंस ट्रैकर का उपयोग करें:',
+                    url: window.location.href
+                }).catch((error) => console.log('Sharing failed', error));
+            } else {
+                alert("लिंक कॉपी करें: " + window.location.href);
+            }
+        }
+
+        // Customer Page Redirect Function
+        function goToCustomerPage() {
+            const name = document.getElementById('cust-name-input').value.trim();
+            if(!name) {
+                alert("कृपया अपना नाम लिखें!");
+                return;
+            }
+            window.location.href = `customer.html?user=${encodeURIComponent(name)}`;
+        }
+    </script>
+</body>
+</html>
+
