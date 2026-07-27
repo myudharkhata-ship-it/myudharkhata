@@ -51,6 +51,113 @@
 
         .empty-msg { text-align: center; color: #999; font-size: 13px; padding: 20px 0; }
     </style>
+
+    <!-- Firebase SDK Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // आपकी प्रदान की गई Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0LNx8Jg9uQVRt9pZmBI-wFXt7tzAG3tM",
+            authDomain: "myudharkhata-270fb.firebaseapp.com",
+            projectId: "myudharkhata-270fb",
+            storageBucket: "myudharkhata-270fb.firebasestorage.app",
+            messagingSenderId: "691714713828",
+            appId: "1:691714713828:web:f0f91d34f52cfca890a4f1",
+            measurementId: "G-7L1D1SWTJ4"
+        };
+
+        // Initialize Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // URL से नाम निकालना
+        const urlParams = new URLSearchParams(window.location.search);
+        const userName = urlParams.get('user') || "अज्ञात ग्राहक";
+        document.getElementById('display-user-name').innerText = userName;
+
+        // Firestore से रियल-टाइम डेटा लोड करना
+        const q = query(
+            collection(db, "customer_expenses"), 
+            where("userName", "==", userName)
+        );
+
+        onSnapshot(q, (snapshot) => {
+            let total = 0;
+            let html = '';
+            let expenses = [];
+
+            snapshot.forEach((doc) => {
+                expenses.push({ id: doc.id, ...doc.data() });
+            });
+
+            // नए रिकॉर्ड सबसे ऊपर दिखेंगे
+            expenses.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+            if (expenses.length === 0) {
+                document.getElementById('expense-list').innerHTML = '<p class="empty-msg">अभी कोई खर्च दर्ज नहीं है।</p>';
+                document.getElementById('total-expense').innerText = '0.00';
+                return;
+            }
+
+            expenses.forEach((item) => {
+                total += Number(item.amount);
+                html += `
+                    <div class="expense-item">
+                        <div class="item-info">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-date">${item.time || ''}</div>
+                        </div>
+                        <div class="item-amount">₹${Number(item.amount).toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('expense-list').innerHTML = html;
+            document.getElementById('total-expense').innerText = total.toFixed(2);
+        }, (error) => {
+            console.error("Firebase Error: ", error);
+            document.getElementById('expense-list').innerHTML = '<p class="empty-msg" style="color:red;">डेटाबेस कनेक्ट करने में समस्या आई। कृपया Firebase Database Rules चेक करें।</p>';
+        });
+
+        // Firebase में नया खर्च जोड़ने का फंक्शन
+        window.addExpense = async function() {
+            const nameInput = document.getElementById('item-name');
+            const amountInput = document.getElementById('item-amount');
+
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (!name || isNaN(amount) || amount <= 0) {
+                alert("कृपया सामान का नाम और सही रुपये दर्ज करें!");
+                return;
+            }
+
+            const now = new Date();
+            const timeString = now.toLocaleDateString('hi-IN') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            try {
+                await addDoc(collection(db, "customer_expenses"), {
+                    userName: userName,
+                    name: name,
+                    amount: amount,
+                    time: timeString,
+                    createdAt: serverTimestamp()
+                });
+
+                nameInput.value = '';
+                amountInput.value = '';
+                window.dismissKeyboard();
+            } catch (e) {
+                alert("डेटा सेव करने में त्रुटि: " + e.message);
+            }
+        };
+
+        window.dismissKeyboard = function() {
+            document.activeElement.blur();
+        };
+    </script>
 </head>
 <body>
 
@@ -84,7 +191,7 @@
                 <input type="number" id="item-amount" placeholder="0.00">
             </div>
 
-            <!-- Action Buttons with Keypad Down Feature -->
+            <!-- Action Buttons -->
             <div class="button-group">
                 <button class="add-btn" onclick="addExpense()">+ खर्च जोड़ें</button>
                 <button class="hide-kb-btn" onclick="dismissKeyboard()" title="कीबोर्ड छुपाएं">
@@ -97,93 +204,11 @@
         <div class="history-card">
             <h4>📋 हाल के खर्चों का हिसाब</h4>
             <div id="expense-list">
-                <p class="empty-msg">अभी कोई खर्च दर्ज नहीं है।</p>
+                <p class="empty-msg">डेटा लोड हो रहा है...</p>
             </div>
         </div>
 
     </div>
 
-    <script>
-        let expenses = [];
-
-        // URL से ग्राहक का नाम निकालकर डिस्प्ले करना
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const userName = urlParams.get('user');
-            if (userName) {
-                document.getElementById('display-user-name').innerText = userName;
-            }
-        };
-
-        // कीबोर्ड नीचे (Hide/Dismiss) करने का फ़ंक्शन
-        function dismissKeyboard() {
-            document.activeElement.blur(); // इस लाइन से मोबाइल कीबोर्ड तुरंत नीचे बंद हो जाता है
-        }
-
-        // नया खर्च जोड़ने का फ़ंक्शन
-        function addExpense() {
-            const nameInput = document.getElementById('item-name');
-            const amountInput = document.getElementById('item-amount');
-
-            const name = nameInput.value.trim();
-            const amount = parseFloat(amountInput.value);
-
-            if (!name || isNaN(amount) || amount <= 0) {
-                alert("कृपया सामान का नाम और सही रुपये दर्ज करें!");
-                return;
-            }
-
-            const now = new Date();
-            const timeString = now.toLocaleDateString('hi-IN') + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const newEntry = {
-                id: Date.now(),
-                name: name,
-                amount: amount,
-                time: timeString
-            };
-
-            expenses.unshift(newEntry);
-
-            // इनपुट बॉक्स खाली करना और कीबोर्ड बंद करना
-            nameInput.value = '';
-            amountInput.value = '';
-            dismissKeyboard();
-
-            renderExpenses();
-        }
-
-        // खर्चों की लिस्ट और टोटल अपडेट करना
-        function renderExpenses() {
-            const listContainer = document.getElementById('expense-list');
-            const totalElement = document.getElementById('total-expense');
-
-            if (expenses.length === 0) {
-                listContainer.innerHTML = '<p class="empty-msg">अभी कोई खर्च दर्ज नहीं है।</p>';
-                totalElement.innerText = '0.00';
-                return;
-            }
-
-            let html = '';
-            let total = 0;
-
-            expenses.forEach(item => {
-                total += item.amount;
-                html += `
-                    <div class="expense-item">
-                        <div class="item-info">
-                            <div class="item-name">${item.name}</div>
-                            <div class="item-date">${item.time}</div>
-                        </div>
-                        <div class="item-amount">₹${item.amount.toFixed(2)}</div>
-                    </div>
-                `;
-            });
-
-            listContainer.innerHTML = html;
-            totalElement.innerText = total.toFixed(2);
-        }
-    </script>
 </body>
 </html>
-
